@@ -1,0 +1,30 @@
+QUARTER HOUR TIMESHEET – INSTALL STEPS (about 10 minutes)
+
+A. PUT IT ONLINE (one time)
+1. Right-click quarter-hour.zip > Extract All. You get a folder called "quarter-hour".
+2. In Microsoft Edge, go to https://app.netlify.com/signup and create a free account
+   (signing in first means the site is yours and is not password-locked).
+3. Go to https://app.netlify.com/drop
+4. Drag the extracted "quarter-hour" folder onto the page.
+5. When it finishes, Netlify shows a web address ending in .netlify.app. Click it.
+   Note: your timesheet entries never go to Netlify. They are stored only in Edge on this laptop.
+
+B. INSTALL AS AN APP
+6. On that page in Edge, click the "App available" icon at the right of the address bar
+   (or ... menu > Apps > Install this site as an app). Click Install.
+7. In the dialog that follows, tick "Auto-start on device login".
+   To change this later: open edge://apps, click More options on Quarter Hour,
+   choose "Auto-start on device login".
+
+C. FIRST RUN
+8. In the app, click "Turn on notifications" and choose Allow.
+9. Settings > Test mode: you get a prompt every minute for 10 minutes. Check you see the
+   Windows notification, hear the sound and can pick a category.
+10. If notifications do not appear: Windows Settings > System > Notifications - make sure
+    notifications are on, Microsoft Edge is allowed, and Do Not Disturb / Focus is off.
+
+DAILY USE
+- Keep the app window open or minimised. Closing it, or the laptop sleeping, stops prompts.
+- Missed blocks appear under Catch-up. Tick several and fill them in one go.
+- Click once anywhere in the app after it starts each morning so the in-app chime can play.
+- Settings > Download backup at least weekly. The app reminds you after 7 days.
