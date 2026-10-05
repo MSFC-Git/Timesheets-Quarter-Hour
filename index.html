@@ -4,26 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Quarter Hour</title>
-<meta name="theme-color" content="#0f5d50">
+<meta name="theme-color" content="#0C1B30">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="top">
-  <div class="brand">
-    <span class="mark" aria-hidden="true"></span>
-    <div>
-      <h1>Quarter Hour</h1>
-      <p id="status" class="status">Starting…</p>
+<header class="band">
+  <div class="top">
+    <div class="brand">
+      <img class="logo" src="icons/msf-logo-square-navy.png" alt="MSF Consulting" width="205" height="159">
+      <div class="appname">
+        <h1>Quarter Hour</h1>
+        <p id="status" class="status">Starting…</p>
+      </div>
     </div>
-  </div>
-  <div class="top-actions">
-    <button id="btnPrompt" class="btn ghost" type="button">Fill now</button>
-    <button id="btnPause" class="btn" type="button">Pause</button>
+    <div class="top-actions">
+      <button id="btnPrompt" class="btn ghost" type="button">Fill now</button>
+      <button id="btnPause" class="btn" type="button">Pause</button>
+    </div>
   </div>
 </header>
 
@@ -181,6 +183,8 @@
     </div>
   </form>
 </dialog>
+
+<footer class="foot">MSF Consulting Limited · msfc.co.nz</footer>
 
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
