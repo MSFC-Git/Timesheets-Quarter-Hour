@@ -233,6 +233,7 @@ function openPicker(k, test = false) {
   $('#pkCurrent').replaceChildren(...(e ? ['Currently: ', catLabel(e.cat), e.note ? ` · ${e.note}` : ''] : []));
   $('#pkCurrent').hidden = !e;
   $('#pkNote').value = e ? e.note : '';
+  noteError(false);
   const lu = S.lastUsed && cat(S.lastUsed.cat) && !cat(S.lastUsed.cat).retired ? S.lastUsed : null;
   const same = $('#pkSame'); same.disabled = !lu;
   if (lu) same.textContent = `↻ Same as last: ${cat(lu.cat).name}${lu.note ? ' – ' + lu.note : ''}`;
@@ -241,13 +242,21 @@ function openPicker(k, test = false) {
       c.name, i < 9 ? h('span', { class: 'k' }, String(i + 1)) : null)));
   const dlg = $('#picker');
   if (!dlg.open) { try { dlg.showModal(); } catch (err) { dlg.setAttribute('open', ''); } }
-  setTimeout(() => ($('.catbtn', dlg) || $('#pkNote')).focus(), 30);
+  setTimeout(() => ($('#pkNote').value.trim() ? ($('.catbtn', dlg) || $('#pkNote')) : $('#pkNote')).focus(), 30);
 }
 function closePicker() { const d = $('#picker'); if (d.open) d.close(); pickerKey = null; flashTitle(false); clearNotifications(); refresh(); }
+function noteError(show) {
+  $('#pkNoteErr').hidden = !show;
+  $('#pkNote').classList.toggle('invalid', show);
+  if (show) $('#pkNote').focus();
+}
 function pick(catId, note) {
   if (!pickerKey) return;
   const k = pickerKey;
-  setEntry(k, catId, note != null ? note : $('#pkNote').value);
+  const text = (note != null ? note : $('#pkNote').value).trim();
+  // A note is compulsory for every category; "Not recorded" is exempt.
+  if (catId !== '_none' && !text) { noteError(true); return; }
+  setEntry(k, catId, text);
   save(); closePicker();
   const left = missingBlocks().length;
   const label = catId === '_none' ? 'Not recorded' : cat(catId).name;
@@ -259,6 +268,14 @@ function bindPicker() {
   $('#pkSame').addEventListener('click', () => { if (S.lastUsed) pick(S.lastUsed.cat, $('#pkNote').value.trim() || S.lastUsed.note); });
   $('#pkNone').addEventListener('click', () => pick('_none', $('#pkNote').value));
   $('#pkLater').addEventListener('click', closePicker);
+  $('#pkNote').addEventListener('input', () => { if ($('#pkNote').value.trim()) noteError(false); });
+  // Enter in the note moves to the categories (it used to close the picker without saving).
+  $('#pkNote').addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    if (!$('#pkNote').value.trim()) { noteError(true); return; }
+    const b = $('#pkCats .catbtn'); if (b) b.focus();
+  });
   $('#picker').addEventListener('cancel', (e) => { e.preventDefault(); closePicker(); });
   $('#picker').addEventListener('keydown', (e) => {
     if (e.target.id === 'pkNote') return;
@@ -288,6 +305,7 @@ function refresh() {
   if (currentView === 'reports') renderReport(now);
   if (currentView === 'categories') renderCats();
   if (currentView === 'settings') renderSettings();
+  if (currentView === 'backups') renderBackups();
 }
 
 function nextPromptTime(now) {
@@ -314,7 +332,7 @@ function renderBanners(now, miss) {
     Notification.permission === 'denied' ? null : h('button', { class: 'btn small', type: 'button', onclick: askNotify }, 'Turn on notifications')));
   const lb = S.settings.lastBackup; const days = lb ? (now - lb) / 86400000 : (now - S.settings.firstRun) / 86400000;
   const entries = Object.keys(S.entries).length;
-  if (entries > 0 && days >= 7) box.append(h('div', { class: 'banner' },
+  if (entries > 0 && days >= 7 && currentView !== 'backups') box.append(h('div', { class: 'banner' },
     h('span', {}, lb ? `Last backup was ${Math.floor(days)} days ago.` : 'You have not backed up your timesheet yet.'),
     h('button', { class: 'btn small', type: 'button', onclick: doBackup }, 'Download backup')));
   if (miss.length && currentView !== 'catchup') box.append(h('div', { class: 'banner' },
@@ -552,11 +570,14 @@ function renderSettings() {
   $('#setSound').checked = !!S.settings.sound;
   $('#setTest').checked = !!testUntil;
   $('#setStart').value = S.settings.startHour; $('#setEnd').value = S.settings.endHour;
-  const lb = S.settings.lastBackup;
-  $('#backupState').textContent = `${Object.keys(S.entries).length} blocks stored. ` + (lb ? `Last backup ${fmtDate(dstr(new Date(lb)))} at ${fmtTime(new Date(lb))}.` : 'No backup yet.');
   const standalone = matchMedia('(display-mode: standalone)').matches;
   $('#installState').textContent = standalone ? 'Running as an installed app.' : 'Running in a browser tab. Install it so it has its own window and can start with Windows.';
   $('#btnInstall').hidden = !installEvt;
+}
+function renderBackups() {
+  const lb = S.settings.lastBackup;
+  const nb = Object.keys(S.entries).length;
+  $('#backupState').textContent = `${nb} block${nb === 1 ? '' : 's'} stored. ` + (lb ? `Last backup ${fmtDate(dstr(new Date(lb)))} at ${fmtTime(new Date(lb))}.` : 'No backup yet.');
 }
 function doBackup() {
   const data = JSON.stringify({ app: 'quarter-hour', exported: new Date().toISOString(), state: S }, null, 1);
@@ -642,7 +663,7 @@ async function init() {
   load();
   bind(); bindPicker();
   let v = 'today'; try { v = localStorage.getItem(STORE + ':view') || 'today'; } catch (e) {}
-  if (!['today', 'catchup', 'reports', 'categories', 'settings'].includes(v)) v = 'today';
+  if (!['today', 'catchup', 'reports', 'categories', 'settings', 'backups'].includes(v)) v = 'today';
   lastDay = dstr(new Date());
   showView(v);
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {

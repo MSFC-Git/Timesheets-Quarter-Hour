@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quarter Hour</title>
+<meta name="theme-color" content="#0C1B30">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="band">
+  <div class="top">
+    <div class="brand">
+      <img class="logo" src="icons/msf-logo-square-navy.png" alt="MSF Consulting" width="205" height="159">
+      <div class="appname">
+        <h1>Quarter Hour</h1>
+        <p id="status" class="status">Starting…</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="btnPrompt" class="btn ghost" type="button">Fill now</button>
+      <button id="btnPause" class="btn" type="button">Pause</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-view="today" aria-selected="true">Day</button>
+  <button role="tab" data-view="catchup">Catch-up <span id="missBadge" class="count" hidden></span></button>
+  <button role="tab" data-view="reports">Reports</button>
+  <button role="tab" data-view="categories">Categories</button>
+  <button role="tab" data-view="settings">Settings</button>
+  <button role="tab" data-view="backups">Backups</button>
+</nav>
+
+<div id="banners" class="banners"></div>
+
+<main>
+  <!-- DAY -->
+  <section id="view-today" class="view">
+    <div class="view-head">
+      <div class="daynav">
+        <button class="btn icon" id="dayPrev" type="button" aria-label="Previous day">‹</button>
+        <h2 id="dayTitle">Today</h2>
+        <button class="btn icon" id="dayNext" type="button" aria-label="Next day">›</button>
+        <button class="btn ghost small" id="dayToday" type="button">Today</button>
+      </div>
+      <p id="daySummary" class="muted"></p>
+    </div>
+    <div class="ribbon-wrap">
+      <div id="ribbon" class="ribbon" aria-label="The day in 15-minute blocks"></div>
+      <div id="ribbonHours" class="ribbon-hours" aria-hidden="true"></div>
+    </div>
+    <div id="dayLegend" class="legend"></div>
+    <ol id="dayList" class="blocklist"></ol>
+  </section>
+
+  <!-- CATCH-UP -->
+  <section id="view-catchup" class="view" hidden>
+    <div class="view-head">
+      <h2>Unfilled blocks</h2>
+      <p class="muted">The last 7 days, since you started using the app. Tick several to fill them in one go, or click a row to fill it on its own.</p>
+    </div>
+    <div id="bulkBar" class="bulkbar">
+      <label class="check"><input type="checkbox" id="selAll"> Select all</label>
+      <span id="selCount" class="muted">0 selected</span>
+      <input id="bulkNote" type="text" placeholder="Note for selected blocks (optional)" maxlength="200">
+      <div id="bulkCats" class="catgrid small"></div>
+      <button id="bulkNone" class="btn ghost small" type="button">Mark as not recorded</button>
+    </div>
+    <div id="missList"></div>
+  </section>
+
+  <!-- REPORTS -->
+  <section id="view-reports" class="view" hidden>
+    <div class="view-head report-head">
+      <div class="seg" role="group" aria-label="Report period">
+        <button id="repDay" type="button" aria-pressed="true">Day</button>
+        <button id="repWeek" type="button" aria-pressed="false">Week</button>
+      </div>
+      <div class="daynav">
+        <button class="btn icon" id="repPrev" type="button" aria-label="Previous">‹</button>
+        <input type="date" id="repDate">
+        <button class="btn icon" id="repNext" type="button" aria-label="Next">›</button>
+      </div>
+      <button id="repExport" class="btn" type="button">Export to Excel</button>
+    </div>
+    <h2 id="repTitle"></h2>
+    <div id="repBody"></div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section id="view-categories" class="view" hidden>
+    <div class="view-head">
+      <h2>Categories</h2>
+      <p class="muted">Rename or recolour by editing in place. Retired categories disappear from the prompt but stay in past reports.</p>
+    </div>
+    <ul id="catList" class="catlist"></ul>
+    <form id="catAdd" class="catadd">
+      <input type="color" id="newCatColor" value="#3a7d44" aria-label="Colour">
+      <input type="text" id="newCatName" placeholder="New category name" maxlength="40" required>
+      <button class="btn" type="submit">Add category</button>
+    </form>
+    <h3 class="sub">Retired</h3>
+    <ul id="catRetired" class="catlist"></ul>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="view-settings" class="view" hidden>
+    <div class="settings">
+      <div class="panel">
+        <h3>Prompts</h3>
+        <div class="row">
+          <div><strong>Windows notifications</strong><p id="notifState" class="muted"></p></div>
+          <button id="btnNotif" class="btn" type="button">Turn on</button>
+        </div>
+        <div class="row">
+          <div><strong>Sound</strong><p class="muted">Plays a chime in the app as well as the Windows notification sound.</p></div>
+          <div class="inline">
+            <label class="switch"><input type="checkbox" id="setSound"><span></span></label>
+            <button id="btnTestSound" class="btn ghost small" type="button">Play</button>
+          </div>
+        </div>
+        <div class="row">
+          <div><strong>Prompt hours</strong><p class="muted">Every day of the week, on the clock (:00, :15, :30, :45).</p></div>
+          <div class="inline">
+            <select id="setStart" aria-label="Start hour"></select>
+            <span>to</span>
+            <select id="setEnd" aria-label="End hour"></select>
+          </div>
+        </div>
+        <div class="row">
+          <div><strong>Test mode</strong><p class="muted">Prompts every minute for 10 minutes, then switches itself off. Each test prompt is for the most recent block, so anything you choose is saved as normal.</p></div>
+          <label class="switch"><input type="checkbox" id="setTest"><span></span></label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Install and start with Windows</h3>
+        <p id="installState" class="muted"></p>
+        <ol class="steps">
+          <li>Open this page in <strong>Microsoft Edge</strong>.</li>
+          <li>Click the <em>App available</em> icon in the address bar (or <em>⋯ → Apps → Install this site as an app</em>).</li>
+          <li>In the dialog after installing, tick <strong>Auto-start on device login</strong>. To change it later: go to <code>edge://apps</code>, click <em>More options</em> on Quarter Hour, choose <em>Auto-start on device login</em>.</li>
+          <li>Leave the app window open or minimised during the day. Closing it stops the prompts.</li>
+        </ol>
+        <button id="btnInstall" class="btn" type="button" hidden>Install now</button>
+      </div>
+    </div>
+  </section>
+  <!-- BACKUPS -->
+  <section id="view-backups" class="view" hidden>
+    <div class="view-head">
+      <h2>Backups</h2>
+      <p class="muted">Entries are stored only in this browser on this laptop. Back up regularly: clearing Edge's site data would erase them.</p>
+    </div>
+    <div class="settings">
+      <div class="panel">
+        <h3>Your data</h3>
+        <p id="backupState" class="muted"></p>
+        <div class="inline wrap">
+          <button id="btnBackup" class="btn" type="button">Download backup</button>
+          <label class="btn ghost" for="restoreFile">Restore from backup…</label>
+          <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+          <button id="btnExportAll" class="btn ghost" type="button">Export everything to Excel</button>
+        </div>
+        <div id="restoreConfirm" class="confirm" hidden></div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- PICKER -->
+<dialog id="picker" aria-labelledby="pkTitle">
+  <form method="dialog" class="picker" id="pickerForm">
+    <p id="pkDate" class="eyebrow"></p>
+    <h2 id="pkTitle"></h2>
+    <p id="pkCurrent" class="muted"></p>
+    <button type="button" id="pkSame" class="same"></button>
+    <div class="notefield">
+      <label for="pkNote">Note <span class="req">(required)</span></label>
+      <input type="text" id="pkNote" placeholder="What did you do? e.g. reviewed shares report" maxlength="200" autocomplete="off" required aria-describedby="pkNoteErr">
+      <p id="pkNoteErr" class="note-err" role="alert" hidden>Add a note first, then choose a category.</p>
+    </div>
+    <div id="pkCats" class="catgrid"></div>
+    <div class="pk-foot">
+      <button type="button" id="pkNone" class="btn ghost small">Not recorded</button>
+      <span class="muted keyhint">Type a note, press Enter, then 1–9</span>
+      <button type="button" id="pkLater" class="btn ghost small">Later</button>
+    </div>
+  </form>
+</dialog>
+
+<footer class="foot">MSF Consulting Limited · msfc.co.nz</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="lib/xlsx.full.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

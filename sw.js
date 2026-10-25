@@ -1,5 +1,5 @@
 /* Quarter Hour service worker: offline copy of the app + notification clicks */
-const CACHE = 'quarter-hour-v2';
+const CACHE = 'quarter-hour-v3';
 const ASSETS = [
   './', './index.html', './app.js', './styles.css', './manifest.webmanifest',
   './lib/xlsx.full.min.js', './icons/icon-192.png', './icons/icon-512.png', './icons/msf-logo-square-navy.png'

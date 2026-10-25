@@ -5,7 +5,7 @@
   --gold: #C9A24B;
   --lightgold: #E7CE8C;
   --paper: #F5F0E6;
-  --bg: #FFFFFF;
+  --bg: #F4F5F7; /* very light grey, just off-white (not a brand palette colour; chosen by Mark) */
   --surface: #FFFFFF;
   --sunk: #F5F0E6;
   --ink: #16130F;
@@ -24,22 +24,7 @@
   --r: 10px;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0C1B30; --surface: color-mix(in srgb, #F5F0E6 6%, #0C1B30); --sunk: color-mix(in srgb, #F5F0E6 11%, #0C1B30);
-    --ink: #F5F0E6; --heading: #F5F0E6; --muted: color-mix(in srgb, #F5F0E6 68%, #0C1B30); --line: color-mix(in srgb, #F5F0E6 16%, #0C1B30);
-    --accent: #C9A24B; --accent-ink: #0C1B30; --warn: #f2b84b; --warn-bg: #2e2412; --empty: color-mix(in srgb, #F5F0E6 12%, #0C1B30);
-    --paused: repeating-linear-gradient(45deg, #2a3a50 0 3px, #15253b 3px 6px);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0C1B30; --surface: color-mix(in srgb, #F5F0E6 6%, #0C1B30); --sunk: color-mix(in srgb, #F5F0E6 11%, #0C1B30);
-  --ink: #F5F0E6; --heading: #F5F0E6; --muted: color-mix(in srgb, #F5F0E6 68%, #0C1B30); --line: color-mix(in srgb, #F5F0E6 16%, #0C1B30);
-  --accent: #C9A24B; --accent-ink: #0C1B30; --warn: #f2b84b; --warn-bg: #2e2412; --empty: color-mix(in srgb, #F5F0E6 12%, #0C1B30);
-  --paused: repeating-linear-gradient(45deg, #2a3a50 0 3px, #15253b 3px 6px);
-  color-scheme: dark;
-}
+/* Light theme only, even when Windows is in dark mode (Mark's decision, 25 October 2026). Header band stays Deep Navy. */
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -77,7 +62,7 @@ main, .top, .tabs, .banners { max-width: 1040px; margin-inline: auto; }
 .btn.danger { background: #b3261e; border-color: #b3261e; color: #fff; }
 
 /* Tabs */
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; margin-top: 10px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; overflow-y: hidden; margin-top: 10px; }
 .tabs button { font: 500 .95rem var(--f-body); background: none; border: 0; color: var(--muted); padding: 10px 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
 .tabs button[aria-selected="true"] { color: var(--heading); border-bottom: 3px solid #C9A24B; font-weight: 700; }
 .count { display: inline-block; min-width: 20px; padding: 0 6px; border-radius: 10px; background: #C9A24B; color: #0C1B30; font-size: .75rem; font-weight: 700; text-align: center; }
@@ -136,6 +121,13 @@ dialog::backdrop { background: rgba(10, 20, 18, .45); }
 .eyebrow { font: 600 .75rem var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .picker h2 { font-size: 1.75rem; }
 .picker input[type=text] { width: 100%; }
+.notefield { display: grid; gap: 6px; background: #F5F0E6; border-left: 4px solid #C9A24B; border-radius: 8px; padding: 12px 14px; }
+.notefield label { font: 600 .95rem var(--f-body); color: #0C1B30; }
+.notefield .req { font-weight: 500; color: var(--muted); }
+.picker .notefield input[type=text] { font-size: 1.1rem; padding: 12px 14px; border: 2px solid #0C1B30; background: #FFFFFF; }
+.picker .notefield input[type=text]:focus { outline: 3px solid #C9A24B; outline-offset: 1px; }
+.picker .notefield input.invalid { border-color: #b3261e; }
+.note-err { color: #b3261e; font-weight: 600; font-size: .9rem; }
 .same { font: 600 .95rem var(--f-body); text-align: left; padding: 12px; border-radius: 8px; border: 1px dashed var(--accent); background: transparent; color: var(--accent); cursor: pointer; }
 .same:disabled { display: none; }
 .pk-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
